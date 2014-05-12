@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+#
+# run round robin from the cli
+#
+
+require 'trollop'
+require 'round-robin'
+
+opts = Trollop::options do
+  banner <<-EOS
+Round Robin v0.1 by Chris Boursnell <cmb211@cam.ac.uk>
+
+USAGE:
+robin <options>
+
+OPTIONS:
+
+EOS
+  opt :reference,
+      "Annotated reference protein fasta file",
+      :required => true,
+      :type => String
+  opt :list,
+      "File containing list of nucleotide fasta files to annotate",
+      :type => String
+  opt :files,
+      "Comma separated list of nucleotide fasta files to annotate",
+      :type => String
+  opt :threads,
+      "number of threads to run BLAST with",
+      :default => 1,
+      :type => :int
+  opt :output,
+      "Final annotation output file",
+      :required => true,
+      :type => String
+end
+
+Trollop::die "Can't find #{opts.list}" if !File.exist?(opts.list) if opts.list
+
+list = []
+raise "choose either --list or --files, not both" if opts.list && opts.files
+if opts.list
+  File.open("#{opts.list}").each_line do |line|
+    line.chomp!
+    raise "can't find #{line}" if !File.exist?(line)
+    list << line
+  end
+
+elsif opts.files
+  a = opts.files.split(",")
+  a.each do |file|
+    raise "can't find #{file}" if !File.exist?(file)
+    list << file
+  end
+else
+  raise "choose either --list or --files"
+end
+
+r = Robin.new(opts.reference, list, opts.threads)
+
+r.run
+
