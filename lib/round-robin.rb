@@ -2,21 +2,22 @@
 
 require 'crb-blast'
 require 'round-robin'
+require 'record'
 require 'threach'
+require 'rgl/adjacency'
+require 'rgl/bidirectional'
 
 class Node 
-  attr_accessor :name, :agi, :bitscore
+  attr_accessor :name, :annotation, :bitscore
 
-  def initialize(name, agi, bitscore)
+  def initialize(name, annotation, bitscore)
     @name = name
-    @agi = agi
+    @annotation = annotation
     @bitscore = bitscore
-    # TODO add a count
-    # TODO add a original of agi thingy
   end
 
   def to_s
-    "#{@name} #{@agi} #{@bitscore}"
+    "#{@name} #{@annotation} #{@bitscore}"
   end
 
   def <=> other
