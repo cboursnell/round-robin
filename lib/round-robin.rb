@@ -48,9 +48,8 @@ class Robin
 
   def run
     pairwise = []
-    @files << @reference
-    @files.each_with_index do |file1, i|
-      @files.each_with_index do |file2, j|
+    (@files+[@reference]).each_with_index do |file1, i|
+      (@files+[@reference]).each_with_index do |file2, j|
         if i != j
           pairwise << [file1, file2]
         end
