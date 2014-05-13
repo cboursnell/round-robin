@@ -39,10 +39,11 @@ class Robin
 
   attr_accessor 
 
-  def initialize reference, list, threads
+  def initialize reference, list, threads, output
     @reference = reference
     @files = list
     @threads = threads
+    @output = output
   end
 
   def run
