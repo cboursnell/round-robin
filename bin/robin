@@ -18,7 +18,8 @@ OPTIONS:
 
 EOS
   opt :reference,
-      "Annotated reference protein fasta file",
+      "Annotated reference protein fasta file or file containing list of "+
+      "references",
       :required => true,
       :type => String
   opt :list,
@@ -38,6 +39,20 @@ EOS
 end
 
 Trollop::die "Can't find #{opts.list}" if !File.exist?(opts.list) if opts.list
+
+fp = File.open("#{opts.reference}")
+line = fp.readline
+if line =~ />/
+  # is_fasta = true
+  reference = [opts.reference]
+else
+  # is_fasta = false
+  reference = []
+  reference << line.chomp
+  fp.each_line do |line|
+    reference << line.chomp
+  end
+end
 
 list = []
 raise "choose either --list or --files, not both" if opts.list && opts.files
