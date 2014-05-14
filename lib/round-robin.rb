@@ -145,7 +145,8 @@ class Robin
           neighbours = @graph.adjacent_vertices(node)
           neighbours.each do |n|
             # puts "#{node.name}->#{n.name}"
-            out.write "#{node.name}(#{node.annotation}) -> #{n.name}(#{n.annotation})\n"
+            out.write "#{node.name}(#{node.annotation}|#{node.count}) -> "
+            out.write "#{n.name}(#{n.annotation}|#{n.count})\n"
           end
         else
           # puts "#{name} agi:#{node.agi} bitscore:#{node.bitscore} is not a vertex in graph g"
@@ -184,9 +185,12 @@ class Robin
     @nodes.each_pair do |name, node|
       (species, contig) = name.split(":")
       @annotation[species]=Hash.new if !@annotation.key?(species)
-      annotation = node.annotation.split(":").last unless node.annotation.nil?
+      (reference_species, annotation) = node.annotation.split(":") unless node.annotation.nil?
       unless annotation=="" or annotation.nil?
-        @annotation[species][contig] = annotation 
+        @annotation[species][contig] = {:species => reference_species,
+                                        :annotation => annotation,
+                                        :bitscore => node.bitscore,
+                                        :count => node.count}
       end
     end
     @annotation
