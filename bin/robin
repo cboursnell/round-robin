@@ -85,9 +85,19 @@ puts "parsing outputs"
 r.parse_outputs
 r.output_edges("edges_before.txt")
 
-3.times do
-  r.cascade
+4.times do |i|
+  r.cascade i
+  r.output_edges("edges_after_#{i}.txt")
 end
-r.output_edges("edges_after.txt")
 
-# a = r.get_annotation
+a = r.get_annotation
+
+File.open("#{opts.output}", "w") do |out|
+  a.each_pair do |species, hash|
+    hash.each_pair do |contig, annotation|
+      out.write "#{species}\t#{contig}\t#{annotation[:species]}\t"
+      out.write "#{annotation[:annotation]}\t#{annotation[:bitscore]}\t"
+      out.write "#{annotation[:count]}\n"
+    end
+  end
+end
