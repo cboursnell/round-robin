@@ -48,9 +48,9 @@ if line =~ />/
 else
   # is_fasta = false
   reference = []
-  reference << line.chomp
+  reference << File.expand_path(line.chomp)
   fp.each_line do |line|
-    reference << line.chomp
+    reference << File.expand_path(line.chomp)
   end
 end
 
