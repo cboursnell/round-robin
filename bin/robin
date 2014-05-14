@@ -58,7 +58,17 @@ else
   raise "choose either --list or --files"
 end
 
-r = Robin.new(opts.reference, list, opts.threads)
+r = Robin.new(opts.reference, list, opts.threads, opts.output)
 
 r.run
 
+puts "parsing outputs"
+r.parse_outputs
+r.output_edges("edges_before.txt")
+
+3.times do
+  r.cascade
+end
+r.output_edges("edges_after.txt")
+
+# a = r.get_annotation
