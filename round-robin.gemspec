@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.description = "See summary"
   gem.authors     = ["Chris Boursnell", "Richard Smith-Unna"]
   gem.email       = 'cmb211@cam.ac.uk'
-  gem.files       = ["lib/round_robin.rb", "bin/robin"]
+  gem.files       = ["lib/round_robin.rb", "lib/record.rb", "bin/robin"]
   gem.executables = ["robin"]
   gem.require_paths = %w( lib )
   gem.homepage    = 'http://rubygems.org/gems/round-robin'
