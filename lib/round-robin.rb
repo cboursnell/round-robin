@@ -83,52 +83,41 @@ class Robin
   def parse_outputs
     @nodes = Hash.new
     @graph = RGL::DirectedAdjacencyGraph.new
-    ref = File.basename(@reference)
-    @jobs.each do |job|
-      Dir.chdir(job.working_dir) do |dir|
-        if File.exist?("reciprocal_hits.txt")
-          puts "#{job.query_name}\t#{job.target_name}"
+    # go through all the reciprocal_hits.txt files where the target is a ref
+    @reference.each do |ref|
+      target = File.basename(ref)
+      @files.each do |file|
+        query = File.basename(file)
+        Dir.chdir("#{@output}/#{query}_into_#{target}") do |dir|
           File.open("reciprocal_hits.txt").each_line do |line|
-            hit = Record.new(line, job.query_name, job.target_name)
-            if ref =~ /#{job.target_name}/
-              # puts "#{job.target_name}\t#{ref}"
-              contig_name = hit.query
-              if !@nodes.key?(contig_name)
-                node = Node.new(contig_name, hit.target, hit.bitscore)
-                @nodes[contig_name] = node
-                # puts "#{node.name}\t#{node.annotation}"
-              else
-                puts "this shouldn't happen"
-                if @nodes[contig_name].annotation.nil?
-                  @nodes[contig_name].annotation = hit.target
-                  @nodes[contig_name].bitscore = hit.bitscore
-                end
-              end
+            hit = Record.new(line, query, target)
+            contig_name = hit.query
+            if !@nodes.key?(contig_name)
+              node = Node.new(contig_name, hit.target, hit.bitscore, 0)
+              @nodes[contig_name] = node
             else
-              # puts "are you sure?"
+              if hit.bitscore > @nodes[contig_name].bitscore
+                node = Node.new(contig_name, hit.target, hit.bitscore, 0)
+                @nodes[contig_name] = node
+              end
             end
           end
-        else
-          puts "error: file not found in #{dir}"
         end
       end
     end
-    # exit
-    # second
-    @jobs.each do |job|
-      Dir.chdir(job.working_dir) do |dir|
-        if File.exist?("reciprocal_hits.txt")
-          puts "#{job.query_name}\t#{job.target_name}"
-          File.open("reciprocal_hits.txt").each_line do |line|
-            hit = Record.new(line, job.query_name, job.target_name)
-            if ref =~ /#{job.target_name}/
-
-            else
-              # puts "branch nodes"
+    # now go through all the reciprocal_hits files for the queries
+    @files.each_with_index do |file1, i|
+      @files.each_with_index do |file2, j|
+        if i != j
+          query = File.basename(file1)
+          target = File.basename(file2)
+          Dir.chdir("#{@output}/#{query}_into_#{target}") do |dir|
+            File.open("reciprocal_hits.txt").each_line do |line|
+              hit = Record.new(line, query, target)
               contig_name1 = hit.query
               contig_name2 = hit.target
-              node1 = Node.new(contig_name1, nil, nil)
-              node2 = Node.new(contig_name2, nil, nil)
+              node1 = Node.new(contig_name1, nil, nil, nil)
+              node2 = Node.new(contig_name2, nil, nil, nil)
               if @nodes.key?(contig_name1)
                 node1 = @nodes[contig_name1]
               else
@@ -142,8 +131,6 @@ class Robin
               @graph.add_edge(node1, node2)
             end
           end
-        else
-          puts "error: file not found in #{dir}"
         end
       end
     end
