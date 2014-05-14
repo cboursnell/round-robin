@@ -65,23 +65,16 @@ class Robin
       output = "#{File.basename(pair[0])}_into_#{File.basename(pair[1])}"
       @jobs << CRB_Blast.new(pair[0], pair[1], output:"#{@output}/#{output}")
     end
-    puts "threach"
     @jobs.threach(@threads) do |job|
       job.makedb
       # puts "job: #{job.query_name}\t#{job.target_name}"
       job.run_blast(1e-5, 1)
     end
     
-    puts "Done"
     @jobs.each do |job|
-      # puts "job: #{job.query_name}\t#{job.target_name}"
-      # puts "  loading"
       job.load_outputs
-      # puts "  find1"
       job.find_reciprocals
-      # puts "  find2"
       job.find_secondaries
-      # puts "  writing"
       job.write_output
       job.clear_memory
     end
