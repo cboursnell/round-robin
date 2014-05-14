@@ -32,6 +32,10 @@ EOS
       "number of threads to run BLAST with",
       :default => 1,
       :type => :int
+  opt :working,
+      "Where the blast output files are saved",
+      :required => true,
+      :type => String
   opt :output,
       "Final annotation output file",
       :required => true,
