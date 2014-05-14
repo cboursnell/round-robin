@@ -8,13 +8,13 @@ require 'rgl/adjacency'
 require 'rgl/bidirectional'
 
 class Node 
-  attr_accessor :name, :annotation, :bitscore
-  # TODO add a count
+  attr_accessor :name, :annotation, :bitscore, :count
 
-  def initialize(name, annotation, bitscore)
+  def initialize(name, annotation, bitscore, count)
     @name = name
     @annotation = annotation
     @bitscore = bitscore
+    @count = count
   end
 
   def to_s
@@ -175,28 +175,25 @@ class Robin
     end
   end
 
-  def cascade
+  def cascade cutoff
     @nodes.each_pair do |name, node|
       if node.annotation.nil?
         neighbours = @graph.adjacent_vertices(node)
-        # puts "#{name}\t#{neighbours.length}"
-        if name =~ /cd:transcript_32/
-          neighbours.each do |n|
-            puts n
-          end
-        end
         bitscore = -1
         annotation = nil
+        count=0
         neighbours.each do |n|
-          if n.bitscore != nil and n.bitscore > bitscore
+          if n.bitscore != nil and n.bitscore > bitscore and n.count == cutoff
             annotation = n.annotation
             bitscore = n.bitscore
+            count = n.count
           end
         end
         if annotation
           # puts "cascading annotation: #{node.name} -> #{annotation}"
           node.annotation = annotation
           node.bitscore = bitscore
+          node.count = count + 1
         end
       end
     end
