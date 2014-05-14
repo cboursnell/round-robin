@@ -196,4 +196,8 @@ class Robin
     @annotation
   end
 
+  def get_clique gene
+    # do stuff
+  end
+
 end
