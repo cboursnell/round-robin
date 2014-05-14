@@ -9,6 +9,7 @@ require 'rgl/bidirectional'
 
 class Node 
   attr_accessor :name, :annotation, :bitscore
+  # TODO add a count
 
   def initialize(name, annotation, bitscore)
     @name = name
@@ -95,16 +96,39 @@ class Robin
           puts "#{job.query_name}\t#{job.target_name}"
           File.open("reciprocal_hits.txt").each_line do |line|
             hit = Record.new(line, job.query_name, job.target_name)
-            if job.target_name =~ /#{ref}/
+            if ref =~ /#{job.target_name}/
+              # puts "#{job.target_name}\t#{ref}"
               contig_name = hit.query
-              if !nodes.key?(contig_name)
+              if !@nodes.key?(contig_name)
                 node = Node.new(contig_name, hit.target, hit.bitscore)
+                @nodes[contig_name] = node
+                # puts "#{node.name}\t#{node.annotation}"
               else
+                puts "this shouldn't happen"
                 if @nodes[contig_name].annotation.nil?
                   @nodes[contig_name].annotation = hit.target
                   @nodes[contig_name].bitscore = hit.bitscore
                 end
               end
+            else
+              # puts "are you sure?"
+            end
+          end
+        else
+          puts "error: file not found in #{dir}"
+        end
+      end
+    end
+    # exit
+    # second
+    @jobs.each do |job|
+      Dir.chdir(job.working_dir) do |dir|
+        if File.exist?("reciprocal_hits.txt")
+          puts "#{job.query_name}\t#{job.target_name}"
+          File.open("reciprocal_hits.txt").each_line do |line|
+            hit = Record.new(line, job.query_name, job.target_name)
+            if ref =~ /#{job.target_name}/
+
             else
               # puts "branch nodes"
               contig_name1 = hit.query
@@ -140,7 +164,7 @@ class Robin
           neighbours = @graph.adjacent_vertices(node)
           neighbours.each do |n|
             # puts "#{node.name}->#{n.name}"
-            out.write "#{node.name}->#{n.name}\n"
+            out.write "#{node.name}(#{node.annotation}) -> #{n.name}(#{n.annotation})\n"
           end
         else
           # puts "#{name} agi:#{node.agi} bitscore:#{node.bitscore} is not a vertex in graph g"
@@ -154,7 +178,13 @@ class Robin
     @nodes.each_pair do |name, node|
       if node.annotation.nil?
         neighbours = @graph.adjacent_vertices(node)
-        bitscore = 0
+        # puts "#{name}\t#{neighbours.length}"
+        if name =~ /cd:transcript_32/
+          neighbours.each do |n|
+            puts n
+          end
+        end
+        bitscore = -1
         annotation = nil
         neighbours.each do |n|
           if n.bitscore != nil and n.bitscore > bitscore
@@ -162,8 +192,8 @@ class Robin
             bitscore = n.bitscore
           end
         end
-        unless annotation.nil?
-          puts "cascading annotation. #{node.name} -> #{annotation}"
+        if annotation
+          # puts "cascading annotation: #{node.name} -> #{annotation}"
           node.annotation = annotation
           node.bitscore = bitscore
         end
