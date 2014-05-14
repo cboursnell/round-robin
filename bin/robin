@@ -77,11 +77,10 @@ else
   raise "choose either --list or --files"
 end
 
-r = Robin.new(opts.reference, list, opts.threads, opts.output)
+r = Robin.new(reference, list, opts.threads, opts.working)
 
 r.run
 
-puts "parsing outputs"
 r.parse_outputs
 r.output_edges("edges_before.txt")
 
