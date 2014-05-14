@@ -41,6 +41,7 @@ class Robin
   attr_accessor 
 
   def initialize reference, list, threads, output
+    reference = [reference] unless reference.is_a? Array
     @reference = reference
     @files = list
     @threads = threads
@@ -49,8 +50,8 @@ class Robin
 
   def run
     pairwise = []
-    (@files+[@reference]).each_with_index do |file1, i|
-      (@files+[@reference]).each_with_index do |file2, j|
+    (@files+@reference).each_with_index do |file1, i|
+      (@files+@reference).each_with_index do |file2, j|
         if i != j
           pairwise << [file1, file2]
         end
