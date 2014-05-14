@@ -17,6 +17,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'crb-blast'
   gem.add_dependency 'threach'
   gem.add_dependency 'bio', '~> 1.4', '>= 1.4.3'
+  gem.add_dependency 'rgl'
   gem.add_dependency 'which', '0.0.2'
 
   gem.add_development_dependency 'turn'
