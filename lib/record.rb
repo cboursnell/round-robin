@@ -7,9 +7,9 @@ class Record
   attr_accessor :qstart, :qend, :tstart, :tend, :evalue, :bitscore
 
   def initialize(line, query_name, target_name)
-    list = line.split("\t")
-    @query      = "#{query_name}:#{list[0].split(/\|/).first}"
-    @target     = "#{target_name}:#{list[1].split(/\|/).first}"
+    list = line.chomp.split("\t")
+    @query      = "#{query_name.split(".").first}:#{list[0].split(/\|/).first}"
+    @target     = "#{target_name.split(".").first}:#{list[1].split(/\|/).first}"
     @id         = list[2]
     @alnlen     = list[3].to_i
     # @mismatches = list[4].to_i
