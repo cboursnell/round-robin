@@ -158,7 +158,8 @@ class Robin
             out.write "#{n.name}(#{n.annotation}|#{n.count})\n"
           end
         else
-          # puts "#{name} agi:#{node.agi} bitscore:#{node.bitscore} is not a vertex in graph g"
+          # puts "#{name} agi:#{node.agi} bitscore:#{node.bitscore} is
+          # not a vertex in graph g"
           # exit
         end
       end 
@@ -194,7 +195,9 @@ class Robin
     @nodes.each_pair do |name, node|
       (species, contig) = name.split(":")
       @annotation[species]=Hash.new if !@annotation.key?(species)
-      (reference_species, annotation) = node.annotation.split(":") unless node.annotation.nil?
+      unless node.annotation.nil?
+        (reference_species, annotation) = node.annotation.split(":")
+      end
       unless annotation=="" or annotation.nil?
         @annotation[species][contig] = {:species => reference_species,
                                         :annotation => annotation,
@@ -213,20 +216,39 @@ class Robin
     queue << contig
     while queue.size > 0
       front = queue.shift
-      puts "getting neighbours for #{front}"
+      # puts "getting neighbours for \"#{front}\""
       if @nodes[front]
         @graph.adjacent_vertices(@nodes[front]).each do |n|
-          if !set.include?(n)
-            puts "adding \"#{n}\" to the front of the queue"
-            queue << n
-            set << n
+          if !set.include?(n.name)
+            # puts "adding \"#{n.name}\" to the front of the queue"
+            queue << n.name
+            set << n.name
           end
         end
-      else
-        puts "can't find #{front} in @nodes"
       end
     end
     set
+  end
+
+  def cluster
+    @clusters = Hash.new
+    # hash: clusters[contig] = cluster_number
+    @contigs = Hash.new
+    # hash: contigs[set_number] = [list of contigs]
+
+    cluster_number = 0
+    @nodes.each_pair do |contig_name, node|
+      if !@clusters[contig_name]
+        set = self.get_clique contig_name
+        @contigs[cluster_number]=[]
+        set.to_a.each do |l|
+          @clusters[l] = cluster_number
+          @contigs[cluster_number] << l
+        end
+        cluster_number += 1
+      end
+    end
+    cluster_number
   end
 
 end

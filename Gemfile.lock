@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    round-robin (0.1)
+    round_robin (0.1)
       bio (~> 1.4, >= 1.4.3)
       crb-blast
       rake
@@ -63,7 +63,7 @@ PLATFORMS
 
 DEPENDENCIES
   coveralls (>= 0.6.7)
-  round-robin!
+  round_robin!
   shoulda-context
   simplecov
   turn

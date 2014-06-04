@@ -5,7 +5,7 @@
 #
 
 require 'trollop'
-require 'round-robin'
+require 'round_robin'
 
 opts = Trollop::options do
   banner <<-EOS
@@ -78,10 +78,13 @@ else
 end
 
 r = Robin.new(reference, list, opts.threads, opts.working)
-
+print "<Robin> running..."
 r.run
+puts "Done"
 
+puts "<Robin> parsing outputs"
 r.parse_outputs
+puts "<Robin> done parsing outputs"
 r.output_edges("edges_before.txt")
 
 4.times do |i|
