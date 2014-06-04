@@ -1,5 +1,5 @@
 Gem::Specification.new do |gem|
-  gem.name        = 'round-robin'
+  gem.name        = 'round_robin'
   gem.version     = '0.1'
   gem.date        = '2014-05-12'
   gem.summary     = "Round robin annotation"

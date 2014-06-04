@@ -1,9 +1,10 @@
 #!/usr/bin/env ruby
 
 require 'crb-blast'
-require 'round-robin'
+require 'round_robin'
 require 'record'
 require 'threach'
+require 'set'
 require 'rgl/adjacency'
 require 'rgl/bidirectional'
 
@@ -38,14 +39,23 @@ end
 
 class Robin
 
-  attr_accessor 
+  attr_accessor :nodes
 
   def initialize reference, list, threads, output
     reference = [reference] unless reference.is_a? Array
+    list = [list] unless list.is_a? Array
     @reference = reference
     @files = list
     @threads = threads
+    output = output[0..-2] if output[-1]=="/"
     @output = output
+    # check all files exist
+    @files.each do |file|
+      abort "Can't find #{file}" if !File.exist?(file)
+    end
+    @reference.each do |ref|
+      abort "Can't find #{ref}" if !File.exist?(ref)
+    end
   end
 
   def run
@@ -59,16 +69,15 @@ class Robin
     end
 
     @jobs = []
-    puts "making list of jobs"
+
     pairwise.each do |pair|
       # print "#{File.basename(pair[0])} => #{File.basename(pair[1])}\n"
       output = "#{File.basename(pair[0])}_into_#{File.basename(pair[1])}"
-      @jobs << CRB_Blast.new(pair[0], pair[1], output:"#{@output}/#{output}")
+      @jobs << CRB_Blast.new(pair[0], pair[1], "#{@output}/#{output}")
     end
     @jobs.threach(@threads) do |job|
       job.makedb
-      # puts "job: #{job.query_name}\t#{job.target_name}"
-      job.run_blast(1e-5, 1)
+      job.run_blast(1e-5, 4)
     end
     
     @jobs.each do |job|
@@ -196,8 +205,28 @@ class Robin
     @annotation
   end
 
-  def get_clique gene
-    # do stuff
+  def get_clique contig
+    # contig name is in format "species:transcript"
+    set = Set.new
+    set << contig
+    queue = []
+    queue << contig
+    while queue.size > 0
+      front = queue.shift
+      puts "getting neighbours for #{front}"
+      if @nodes[front]
+        @graph.adjacent_vertices(@nodes[front]).each do |n|
+          if !set.include?(n)
+            puts "adding \"#{n}\" to the front of the queue"
+            queue << n
+            set << n
+          end
+        end
+      else
+        puts "can't find #{front} in @nodes"
+      end
+    end
+    set
   end
 
 end
