@@ -39,7 +39,7 @@ end
 
 class Robin
 
-  attr_accessor :nodes
+  attr_accessor :nodes, :contig_clusters, :contig_sets
 
   def initialize reference, list, threads, output
     reference = [reference] unless reference.is_a? Array
@@ -56,6 +56,10 @@ class Robin
     @reference.each do |ref|
       abort "Can't find #{ref}" if !File.exist?(ref)
     end
+    @contig_clusters = Hash.new
+    # hash: clusters[contig] = cluster_number
+    @contig_sets = Hash.new
+    # hash: contig_sets[set_number] = [list of contigs]
   end
 
   def run
@@ -231,19 +235,15 @@ class Robin
   end
 
   def cluster
-    @clusters = Hash.new
-    # hash: clusters[contig] = cluster_number
-    @contigs = Hash.new
-    # hash: contigs[set_number] = [list of contigs]
 
     cluster_number = 0
     @nodes.each_pair do |contig_name, node|
-      if !@clusters[contig_name]
+      if !@contig_clusters[contig_name]
         set = self.get_clique contig_name
-        @contigs[cluster_number]=[]
+        @contig_sets[cluster_number]=[]
         set.to_a.each do |l|
-          @clusters[l] = cluster_number
-          @contigs[cluster_number] << l
+          @contig_clusters[l] = cluster_number
+          @contig_sets[cluster_number] << l
         end
         cluster_number += 1
       end
