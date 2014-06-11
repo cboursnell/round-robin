@@ -212,7 +212,7 @@ class Robin
     @annotation
   end
 
-  def get_clique contig
+  def get_cluster contig
     # contig name is in format "species:transcript"
     set = Set.new
     set << contig
@@ -239,8 +239,8 @@ class Robin
     cluster_number = 0
     @nodes.each_pair do |contig_name, node|
       if !@contig_clusters[contig_name]
-        set = self.get_clique contig_name
-        @contig_sets[cluster_number]=[]
+        set = self.get_cluster contig_name
+        @contig_sets[cluster_number] = []
         set.to_a.each do |l|
           @contig_clusters[l] = cluster_number
           @contig_sets[cluster_number] << l
