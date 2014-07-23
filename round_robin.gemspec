@@ -13,7 +13,7 @@ Gem::Specification.new do |gem|
   gem.license     = 'MIT'
 
   gem.add_dependency 'trollop', '~> 2.0'
-  gem.add_dependency 'crb-blast', '~> 0.3', '>= 0.3'
+  gem.add_dependency 'crb-blast', '~> 0.4', '>= 0.4.0'
   gem.add_dependency 'threach', '~> 0.2', '>= 0.2.0'
   gem.add_dependency 'bio', '~> 1.4', '>= 1.4.3'
   gem.add_dependency 'rgl', '~> 0.4', '>= 0.4.0'

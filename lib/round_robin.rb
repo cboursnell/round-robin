@@ -76,11 +76,11 @@ class Robin
     pairwise.each do |pair|
       # print "#{File.basename(pair[0])} => #{File.basename(pair[1])}\n"
       output = "#{File.basename(pair[0])}_into_#{File.basename(pair[1])}"
-      @jobs << CRB_Blast.new(pair[0], pair[1], "#{@output}/#{output}")
+      @jobs << CRB_Blast::CRB_Blast.new(pair[0], pair[1], "#{@output}/#{output}")
     end
-    @jobs.threach(@threads) do |job|
+    @jobs.threach do |job|
       job.makedb
-      job.run_blast(1e-5, 1, false)
+      job.run_blast(1e-5, @threads, true)
     end
 
     @jobs.each do |job|
