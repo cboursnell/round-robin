@@ -2,3 +2,4 @@
 *~
 dry_runs
 coverage
+*.lock

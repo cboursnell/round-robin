@@ -8,7 +8,7 @@ require 'set'
 require 'rgl/adjacency'
 require 'rgl/bidirectional'
 
-class Node 
+class Node
   attr_accessor :name, :annotation, :bitscore, :count
 
   def initialize(name, annotation, bitscore, count)
@@ -73,7 +73,6 @@ class Robin
     end
 
     @jobs = []
-
     pairwise.each do |pair|
       # print "#{File.basename(pair[0])} => #{File.basename(pair[1])}\n"
       output = "#{File.basename(pair[0])}_into_#{File.basename(pair[1])}"
@@ -81,9 +80,9 @@ class Robin
     end
     @jobs.threach(@threads) do |job|
       job.makedb
-      job.run_blast(1e-5, 4)
+      job.run_blast(1e-5, 1, false)
     end
-    
+
     @jobs.each do |job|
       job.load_outputs
       job.find_reciprocals
@@ -166,7 +165,7 @@ class Robin
           # not a vertex in graph g"
           # exit
         end
-      end 
+      end
     end
   end
 
@@ -176,7 +175,7 @@ class Robin
         neighbours = @graph.adjacent_vertices(node)
         bitscore = -1
         annotation = nil
-        count=0
+        count = 0
         neighbours.each do |n|
           if n.bitscore != nil and n.bitscore > bitscore and n.count == cutoff
             annotation = n.annotation

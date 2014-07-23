@@ -32,6 +32,10 @@ EOS
       "number of threads to run BLAST with",
       :default => 1,
       :type => :int
+  opt :cascade,
+      "number of times to cascade annotations through the graph",
+      :type => :int
+      :default => 3
   opt :working,
       "Where the blast output files are saved",
       :required => true,
@@ -70,6 +74,7 @@ if opts.list
 elsif opts.files
   a = opts.files.split(",")
   a.each do |file|
+    file = File.expand_path(file)
     raise "can't find #{file}" if !File.exist?(file)
     list << file
   end
@@ -87,7 +92,7 @@ r.parse_outputs
 puts "<Robin> done parsing outputs"
 r.output_edges("edges_before.txt")
 
-4.times do |i|
+opts.cascade.times do |i|
   r.cascade i
   r.output_edges("edges_after_#{i}.txt")
 end
